@@ -1,0 +1,202 @@
+\documentclass[a4paper]{article}
+\usepackage{amsmath}
+\title{COP290 Assignment 1}
+\date{15/01/2018}
+\author{Bharadwaj Dangeti(2016CS10360) Rayala Harichandan(2016CS10320)}
+\begin{document}
+ \maketitle
+ \pagenumbering{roman}
+ \section{Generation of 2D projections from 3D objects}
+$V_k$ represents $K^{th}$ vertex.
+$e_k$=\{$V_a$,$V_b$\}
+\\*
+\\*
+We can create a matrix for edges.
+\\*
+If there is an edge between $V_a$ and $V_b$ ,then $a^{th}$ row $b^{th}$ column and $b^{th}$ row $a^{th}$ column of the matrix are 1.Else 0.
+\\*\\*
+Matrix set of vertices =\[\begin{bmatrix}
+V_1&V_2&V_3&-&-&-&-&V_n
+\end{bmatrix}
+\]\\*
+\\*
+For any vertex $V_k$,the projection on xy,yz,zx planes are taken as $U_k^{xy}$,$U_k^{yz}$,$U_k^{zx}$ respectively.
+\\*\\*
+\subsection{Orthogonal Projections}
+Vertex set of projection in xy plane \(\begin{bmatrix}
+U_1^{xy}&U_2^{xy}&U_3^{xy}&-&-&-&-&U_n^{xy}
+\end{bmatrix}
+\)=
+\[ \left( \begin{array}{cccccccc}
+1&0&0\\
+0&1&0
+\end{array} \right)
+%
+\left( \begin{array}{cccccccc}
+V_1&V_2&V_3&-&-&-&-&V_n
+\end{array} \right)
+\] 
+\\*\\*
+Vertex set of projection in xy plane \(\begin{bmatrix}
+U_1^{yz}&U_2^{yz}&U_3^{yz}&-&-&-&-&U_n^{yz}
+\end{bmatrix}
+\)=
+\[ \left( \begin{array}{cccccccc}
+0&1&0\\
+0&0&1
+\end{array} \right)
+%
+\left( \begin{array}{cccccccc}
+V_1&V_2&V_3&-&-&-&-&V_n
+\end{array} \right)
+\] 
+\\*\\*
+Vertex set of projection in xy plane \(\begin{bmatrix}
+U_1^{zx}&U_2^{zx}&U_3^{zx}&-&-&-&-&U_n^{zx}
+\end{bmatrix}
+\)=
+\[ \left( \begin{array}{cccccccc}
+1&0&0\\
+0&0&1
+\end{array} \right)
+%
+\left( \begin{array}{cccccccc}
+V_1&V_2&V_3&-&-&-&-&V_n
+\end{array} \right)
+\] 
+
+Now make sure that no vertex is repeated in aprojection.If repeated,delete the vertex with higher suffix.
+\\*\\*
+If $e_k$=\{$V_a$,$V_b$\} exists, there should be edges between $U_a$ and $U_b$ in all projections.
+\\*\\*
+They can be obtained using edge matrix.
+\\*
+\subsection{Projection on a random plane}
+Take a plane aX+bY+cZ=d.
+\\*
+Projection of a point (p,q,r) on this plane can be obtained by finding the normal of the plane passing through this point.
+\\*The equation of the normal is (X-p)/a=(Y-q)/b=(Z-r)/c.
+\\*The common point of the normal and the plane gives projection.
+\\*
+Therefore,the projection of the set of vertices on the given plane is
+\[ 1/(a^2+b^2+c^2)\left( \begin{array}{cccccccc}
+b^2+c^2&-ab&-ac\\
+-ab&a^2+c^2&-bc\\
+-ac&-bc&a^2+b^2
+\end{array} \right)
+%
+\left( \begin{array}{cccccccc}
+V_1&V_2&V_3&-&-&-&-&V_n
+\end{array} \right)\]
++
+\[d/(a^2+b^2+c^2)\left( \begin{array}{cccccccc}
+a&a&a&-&-&-&-&a\\
+b&b&b&-&-&-&-&b\\
+c&c&c&-&-&-&-&c
+\end{array} \right)\] 
+Then ,if there is an edge between two vertices in 3D, there should be an edge between corresponding projections.Thus,projection on plane is obtained.
+\\*
+\subsection{Rotation about coordinate axis}
+If the 3D object is to be rotated,
+then we will rotate it first and then take projections.
+\\*\\*
+After clockwise rotation of angle A about x-axis, the new vertex set will be
+\[ \left( \begin{array}{cccccccc}
+1&0&0\\
+0&cosA&-sinA\\
+0&sinA&cosA
+\end{array} \right)
+*
+\left( \begin{array}{cccccccc}
+V_1&V_2&V_3&-&-&-&-&V_n
+\end{array} \right)
+\] 
+\\*After clockwise rotation of angle A about y-axis, the new vertex set will be
+\[ \left( \begin{array}{cccccccc}
+cosA&0&sinA\\
+0&1&0\\
+-sinA&0&cosA
+\end{array} \right)
+*
+\left( \begin{array}{cccccccc}
+V_1&V_2&V_3&-&-&-&-&V_n
+\end{array} \right)
+\] 
+\\*
+After clockwise rotation of angle A about z-axis, the new vertex set will be
+\[ \left( \begin{array}{cccccccc}
+cosA&-sinA&0\\
+sinA&cosA&0\\
+0&0&1
+\end{array} \right)
+*
+\left( \begin{array}{cccccccc}
+V_1&V_2&V_3&-&-&-&-&V_n
+\end{array} \right)
+\] 
+\**
+The rotations are used to view the object from different angles.
+ 
+ \section{Regeneration of the 3D-Object from it's 2D-Projections}
+ 	\paragraph{			}
+    
+ 	The process of regeneration of a 3D-object from it's 2D-Projection is done in four steps.
+    
+    Step 1: Regeneration of Vertices
+    
+    Step 2: Regeneration of Edges and formation of Pseudo Wire frame.
+    
+    Step 3: Removal of extra edges in the wire frame.
+    
+    Step 4: Choosing the faces of the object.
+     \\*
+     
+     
+     Let planes $p_1$, $p_2$ and $p_3$ belong to the set of planes on which projections of a 3D object are taken. Then if $p_1$ belongs to the span of $p_2$, $p_3$ i.e $ p_1=\alpha p_2 + \beta p_3$  then with the information present in the planes $p_2$ and $p_3$, Projection information in $p_1$ can be generated. For locating a point in 3d we need minimum of three independent informations. Out of all the projections planes three planes which are independent of each other are sufficient to generate a Wire frame of the 3D-Object (Considering Polyhedrals only). 
+     
+     
+    
+       Let the three planes be Plane 1, Plane2 \& Plane 3.
+      
+       $V^i$ be the set of all possible vertices and $E^i$ be the set of all edges  of the projection in the plane i.
+    \begin{equation}
+		V^i = \{ v^i_1, v^i_2, . . .\}
+        E^i = \{ e^i_1, e^i_2, . . .\}      
+    \end{equation}
+    As only polyhedral objects are considered an edge must be a line segment and does not include a vertex in between.   
+    \subsection{Regeneration of vertices}
+    If the projections are labeled, then the number of vertices say $N$, of the object is known. 
+    Let $U$ be the set of vertices and F be the set of edges of the regenerated object.
+    \begin{equation}
+		U = \{ u_1, u_2, . . .\}
+        F = \{ f_1, f_2, . . .\}      
+    \end{equation}
+    Every 3D point gives a point upon projection. So, $u_i$ should be associated with a point vertex in all the three projections.
+    let the projections of $u_i$ are $v^1_a$,$v^2_b$ \& $v^3_c$.
+    A line is drawn from $v^1_a$ perpendicular to the Plane 1. Similarly lines are drawn from the other two points. The point of intersection of these three lines gives the point $u_i$.
+    All points of the object are regenerated in this way.
+    \\*
+   \subsection{Regeneration of Edges and formation of Pseudo wireframe}
+   An edge of the 3D-Object upon projection must be a line-segment or a point on the projected plane.
+ \\*  Consider two points in set U, say $u_i \& u_j$ and their projections be $\{v^1_{ui},v^2_{ui},v^3_{ui}\}$ and  $\{v^1_{uj},v^2_{uj},v^3_{uj}\}$ respectively.
+ \\*
+   
+   If $\{u_i,u_j\}$ belongs to the set F then,for $\forall k, k=\{1,2,3\}$, either  $v^k_{ui}$ is equal to $v^k_{uj}$ or an edge $e=\{v^k_{ai},v^k_{aj}\}$ must exist in the set $E^k$.
+   
+   This results in the formation of a Pseudo wire frame of the object which is being regenerated. 
+   \subsection{Removal of extra edges in the wire frame}
+   In the pseudo wire frame generated the may have extra edges for the solution expected. If they are removed then the number of 3D-object solutions for the frame generated can be reduced. Let the set $C^i$, be the collection of edge of edge pairs, in which the edges in each pair have a common vertex and are parallel to each other. 
+   \begin{equation}
+   	   	   	C^i=\{(e^i_k,e^i_l),.,.\}
+   \end{equation}
+   If all 3D-Edge's projections lies as a part of these three sets $C^1,C^2 \& C^3$ then that edge may or may not be an actual edge of the expected solution. If input is given to know their existence, number of 3D-Object solutions of the wire frame generated can be reduced.      
+   \subsection{Choosing the faces of the object}
+   The frame generated in the above step may still have more than one solution. If the faces of the object are decided then we could generate a unique object from the three projections. The edges in the frame which are actually not the edges of the 3D-Object are removed from the set F.
+ 
+ \section{Assumptions}
+ 	\begin{enumerate}
+ 	\item Considering Polyhedral Objects only.
+    \item User provides input to eliminate specific edges to reduce the number of solutions and for getting a wire frame close to reach unique solid solution.
+    \item After calculating all possible faces of the wire frame then user should choose faces to get final solution.
+ 	\end{enumerate}
+\end{document}

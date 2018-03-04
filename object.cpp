@@ -16,51 +16,44 @@ class object {
 	//To check the validity of given data.
 	bool validity_check();
 	
-	vector* out_vertex() {
-		// returns list of vertices
-	}
-	
-	vector* out_faces() {
-		// returns list of faces
-	} 
+	// returns list of vertices
+	vector* out_vertex();
 
-	int* out_edges() {
-		// returns list of edges
-	}
+	// returns list of faces
+	} 
+	vector* out_faces();
+		
+	// returns list of edges
+	int* out_edges(); 
 	
-	int out_num() {
-		//returns no. of vertices
-	}
+	//returns no. of vertices
+	int out_num(); 
+		
 	
-	void wireframe_to_object(){
-		//selecting faces to convert wire frame to object until valid 3d object is formed.
-	}
-	void zoom(float magnification) {
-		//Zoom in and out, changes temp and displays temp
-	}	
+	//selecting faces to convert wire frame to object until valid 3d object is formed.
+	void wireframe_to_object();	
 	
-	void rotation(float angle_x, float angle_y, float angle_z) {
-		//Rotation wrt axes x,y,z(original), changes temp and displays temp
-	}
+	//Zoom in and out, changes temp and displays temp
+	void zoom(float magnification);
+
+	//Rotation wrt axes x,y,z(original), changes temp and displays temp
+	void rotation(float angle_x, float angle_y, float angle_z) ;
+		
 	
-	void plane_project( vector normal ) {
-		//returns projection of temp wrt the plane given
-	}	
+	//returns projection of temp wrt the plane given
+	void plane_project( vector normal );
 	
-	void isometric() {
-		//returns isometric projection of temp
-	}
+	//returns isometric projection of temp
+	void isometric();
 	
-	void orthogonal() {
-		//returns orthogonal projections of temp wrt current axes
-	}
+	//returns orthogonal projections of temp wrt current axes
+	void orthogonal();
 	
-	void reform() {
-		// if no origin in vertices then chooses one vertex as origin and transforms other vertices
-	}
-	void savefile(char* path){
-		//save the object in path file.
-	}
+	// if no origin in vertices then chooses one vertex as origin and transforms other vertices
+	void reform();
+	
+	//save the object in path file.
+	void savefile(char* path);
 };
 
 struct planevector {

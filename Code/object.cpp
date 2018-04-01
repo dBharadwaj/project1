@@ -1,13 +1,15 @@
 #include <iostream>
+#include <cmath>
 struct vector {
 	float x; float y; float z;
 };
 class object {
 	vector* vertices;
-	int num;
+	int nvertex,nface;
+	int* nverface;
 	int** edges;
-	vector** faces; //type for faces
-	object* temp; // temporary changes to the object are stored here
+	int** faces; //type for faces
+	object* slave; // temporary changes to the object are stored here
 	
 	public:
 	// To display object in 3D
@@ -16,7 +18,7 @@ class object {
 	//To check the validity of given data.
 	bool validity_check();
 	
-	// returns list of vertices
+	// returns list of vertices 
 	vector* out_vertex();
 
 	// returns list of faces
@@ -34,10 +36,37 @@ class object {
 	void wireframe_to_object();	
 	
 	//Zoom in and out, changes temp and displays temp
-	void zoom(float magnification);
+	void zoom(float magX, float magY, fload magZ){
+		int nv = *(slave->nvertex);
+		vector verti[nv] = *(slave->vertices);
+		for( int i=0; i<nv; i++) {
+			verti[i][0] *= magX;
+			verti[i][1] *= magY;
+			verti[i][2] *= magZ;
+		} 
+		slave->vertices = &verti;
+	};
 
 	//Rotation wrt axes x,y,z(original), changes temp and displays temp
-	void rotation(float angle_x, float angle_y, float angle_z) ;
+	void rotation(float angle_x=0, float angle_y=0, float angle_z=0) {
+		int nv = *(slave->nvertex);
+		vector verti[nv] = *(slave->vertices);
+		for( int i=0; i<nv; i++) {
+			//verti[i][0] *= angle_x;
+			verti[i][1] = cos(angle_x)*verti[i][1]-sin(angle_x)*verti[i][2];
+			verti[i][2] = sin(angle_x)*verti[i][1]+cos(angle_x)*verti[i][2];
+
+			verti[i][0] = cos(angle_y)*verti[i][0]+sin(angle_y)*verti[i][2];
+			//verti[i][1] = cos(angle_x)*verti[i][1]-sin(angle_x)*verti[i][2];
+			verti[i][2] = -sin(angle_y)*verti[i][0]+cos(angle_y)*verti[i][2];
+
+			verti[i][0] = cos(angle_z)*verti[i][0]-sin(angle_z)*verti[i][1];;
+			verti[i][1] = sin(angle_z)*verti[i][1]+cos(angle_z)*verti[i][1m ];
+			//verti[i][2] = sin(angle_x)*verti[i][1]+cos(angle_x)*verti[i][2];
+
+		} 
+		slave->vertices = &verti;
+	};
 		
 	
 	//returns projection of temp wrt the plane given
@@ -67,12 +96,12 @@ struct hidden_edge {
 
 class projection {
 	planevector* vertices;
-	int num; // number of vertices
-	int** labeling;
+	int nvertex,nverobj; // number of vertices
+	int** labeling; //int[nverobj][nvertex]
 	int** edges;	
-	hidden_edge* hid_edge;
-	projection* temp;
-	vector plane_projection;
+	//hidden_edge* hid_edge;
+	projection* slave;
+	vector pln_vector;
 	
 	public:
 	bool validity_check(){
@@ -99,8 +128,16 @@ class projection {
 		//returns no. of vertices
 	}
 	 
-	void zoom(float magnification) {
+	void zoom(float magX,float magY) {
 		//Zoom in and out, changes temp and displays temp
+		int nv = *(slave->nvertex);
+		vector verti[nv] = *(slave->vertices);
+		for( int i=0; i<nv; i++) {
+			verti[i][0] *= magX;
+			verti[i][1] *= magY;
+			//verti[i][2] *= magZ;
+		} 
+		slave->vertices = &verti;
 	}
 	void savefile(char* path){
 		//save the projection in path file.
@@ -118,3 +155,4 @@ object wireframe(projection* plane){
 int main() {
 	//Main
 }
+	

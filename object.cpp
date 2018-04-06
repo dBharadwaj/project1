@@ -1,120 +1,185 @@
-#include <iostream>
-struct vector {
-	float x; float y; float z;
-};
-class object {
-	vector* vertices;
-	int num;
-	int** edges;
-	vector** faces; //type for faces
-	object* temp; // temporary changes to the object are stored here
-	
-	public:
-	// To display object in 3D
-	void display();
-	
-	//To check the validity of given data.
-	bool validity_check();
-	
-	// returns list of vertices
-	vector* out_vertex();
+#include "object.h"
+#include <stdlib.h>
+#include <fstream>
+#include <cmath>
 
-	// returns list of faces
-	} 
-	vector* out_faces();
-		
-	// returns list of edges
-	int* out_edges(); 
-	
-	//returns no. of vertices
-	int out_num(); 
-		
-	
-	//selecting faces to convert wire frame to object until valid 3d object is formed.
-	void wireframe_to_object();	
-	
-	//Zoom in and out, changes temp and displays temp
-	void zoom(float magnification);
+object::object(int n)
+{
+    nvertex = n;
+    vertices = (vector3*) malloc(n* sizeof(vector3));
+    nface = 0;
+    
+    edges = (int**) malloc(n* sizeof(int));
+    for(int i=0; i<n; i++) {
+        int x [n];
+        for(int j=0;j<n;j++)
+            x[j]=0;
+        edges[i] = x;
+    }
+}
 
-	//Rotation wrt axes x,y,z(original), changes temp and displays temp
-	void rotation(float angle_x, float angle_y, float angle_z) ;
-		
-	
-	//returns projection of temp wrt the plane given
-	void plane_project( vector normal );
-	
-	//returns isometric projection of temp
-	void isometric();
-	
-	//returns orthogonal projections of temp wrt current axes
-	void orthogonal();
-	
-	// if no origin in vertices then chooses one vertex as origin and transforms other vertices
-	void reform();
-	
-	//save the object in path file.
-	void savefile(char* path);
-};
+void object::zoom(float magX, float magY, float magZ){
+    for( int i=0; i<nvertex; i++) {
+       vertices[i].x *= magX;
+       vertices[i].y *= magY;
+       vertices[i].z *= magZ;
+    } 
+    //slave->vertices = &verti;
+}
 
-struct planevector {
-	float x; float y; 
-};
+void object::rotation(float angle_x, float angle_y, float angle_z) {
 
-struct hidden_edge {
-	//Structure for hidden edge
-};
+            vector3* verti  = vertices;
+            for( int i=0; i<nvertex; i++) {
+                //rotation along x
+                verti[i].y = cos(angle_x)*verti[i].y-sin(angle_x)*verti[i].z;
+                verti[i].z = sin(angle_x)*verti[i].y+cos(angle_x)*verti[i].z;
+
+                //rotation along y
+                verti[i].x = cos(angle_y)*verti[i].x+sin(angle_y)*verti[i].z;
+                verti[i].z = -sin(angle_y)*verti[i].x+cos(angle_y)*verti[i].z;
+
+                //rotation along z
+                verti[i].x = cos(angle_z)*verti[i].x-sin(angle_z)*verti[i].y;
+                verti[i].y = sin(angle_z)*verti[i].x+cos(angle_z)*verti[i].y;
+
+            }
+   vertices = verti;
+}
+
+bool object::validity_check() {
+    return true;
+}
+
+void object::wireframe_to_object() {
+
+}
 
 
-class projection {
-	planevector* vertices;
-	int num; // number of vertices
-	int** labeling;
-	int** edges;	
-	hidden_edge* hid_edge;
-	projection* temp;
-	vector plane_projection;
-	
-	public:
-	bool validity_check(){
-		//To check the validity of given data.
-	}
+int** zeromatix(int k) {
+    int** hi = (int **)malloc(k*sizeof(int));
+    for(int i=0;i<k;i++) {
+        int* g = (int *)malloc(k*sizeof(int));
+        for(int j=0;j<k;j++) { g[j] = 0; }
+        hi[i] = g;
+    }
+    return hi;
+}
 
-	void display() {
-		// To display projection(2D)
-	}
-	
-	planevector* out_vertex() {
-		// returns list of vertices
-	}
-	
-	hidden_edge* out_hid_edge() {
-		// returns list of hidden edges
-	}
+int** copymatrix(int** src,int m,int n) {
+    int** hi = (int **)malloc(m*sizeof(int));
+    for(int i=0;i<m;i++) {
+        int* g = (int *)malloc(n*sizeof(int));
+        for(int j=0;j<n;j++) { g[j] = src[i][j]; }
+        hi[i] = g;
+    }
+    return hi;
+}
 
-	int* out_edges() {
-		// returns list of edges
-	}
-	
-	int out_num() {
-		//returns no. of vertices
-	}
-	 
-	void zoom(float magnification) {
-		//Zoom in and out, changes temp and displays temp
-	}
-	void savefile(char* path){
-		//save the projection in path file.
-	}
-};	
+void orthographic(object* obj,projection *top,projection *side, projection*front) {
+    top->edges=copymatrix(obj->edges,obj->nvertex,obj->nvertex);
+    side->edges=copymatrix(obj->edges,obj->nvertex,obj->nvertex);
+    front->edges=copymatrix(obj->edges,obj->nvertex,obj->nvertex);
 
-bool check(projection* plane){
-		//checking if the data is sufficient to create unique 3d object.
-	}
+    for(int i=0;i<obj->nvertex;i++ ) {
+        top->vertices[i].x=obj->vertices[i].x;
+        top->vertices[i].y=obj->vertices[i].y;
 
-object wireframe(projection* plane){
-		//Generate wire frame.
-	}
+        side->vertices[i].x=obj->vertices[i].x;
+        side->vertices[i].y=obj->vertices[i].z;
 
-int main() {
-	//Main
+        front->vertices[i].x=-obj->vertices[i].y;
+        front->vertices[i].y=obj->vertices[i].z;
+    }
+
+    top->pln_vector.x=0;top->pln_vector.y=0;top->pln_vector.z=1.0;
+    side->pln_vector.x=0;side->pln_vector.y=1;side->pln_vector.z=0;
+    front->pln_vector.x=1;front->pln_vector.y=0;front->pln_vector.z=0;
+}
+
+void ortho2obj(projection* top,projection* side,projection* front,object* obj) {
+   obj->nvertex = top->nvertex;
+   for(int i=0;i<obj->nvertex;i++) {
+       obj->vertices[i].x=top->vertices[i].x;
+       obj->vertices[i].y=top->vertices[i].y;
+       obj->vertices[i].z=side->vertices[i].y;
+   }
+   obj->edges = copymatrix(top->edges,obj->nvertex,obj->nvertex);
+   obj->nface = 0;
+}
+
+projection::projection(int n) {
+   nvertex= n;
+   vertices = (vector2*)malloc(n*sizeof(vector3));
+   edges = (int**) malloc(n* sizeof(int));
+   for(int i=0; i<n; i++) {
+       int x [n];
+       for(int j=0;j<n;j++)
+           x[j]=0;
+       edges[i] = x;
+   }
+   pln_vector.x=0;pln_vector.y=0;pln_vector.z=0;
+}
+
+void projection::zoom(float magX, float magY) {
+    for( int i=0; i<nvertex; i++) {
+       vertices[i].x *= magX;
+       vertices[i].y *= magY;
+    }
+}
+
+object* objreadfile(char* path) {
+
+    std::fstream infile(path, std::ios_base::in);
+    int x; float y;
+    infile>>x;
+    object obj1 = object(x);
+    object* obj = &obj1;
+    for(int i=0;i<obj->nvertex;i++) {
+        infile>>y;
+        obj->vertices[i].x=(y);
+        infile>>y;
+        obj->vertices[i].y=(y);
+        infile>>y;
+        obj->vertices[i].z=(y);
+    }
+    for(int j=0;j<obj->nvertex;j++) {
+        for(int k=0;k<obj->nvertex;k++) {
+            infile>>x;
+            obj->edges[j][k] = x;
+    }
+    infile>>x;
+    obj->nface =x ;
+    obj->nverface = (int*)malloc(obj->nvertex*sizeof(int) );
+    for(int b=0;b<obj->nvertex;b++) {
+       infile>>x;
+       obj->nverface[b] = x;
+    }
+    return obj;
+}
+
+
+projection* projreadfile(char* path) {
+   std::fstream myfile(path, std::ios_base::in);
+   int x;float y;
+   infile>>x;
+   projection* proj = &projection(x);
+   for(int i=0;i<proj->nvertex;i++) {
+       infile>>y;
+       proj->vertices[i].x=(y);
+       infile>>y;
+       proj->vertices[i].y=(y);
+   }
+   for(int j=0;j<proj->nvertex;j++) {
+       for(int k=0;k<proj->nvertex;k++) {
+           infile>>x;
+           proj->edges[j][k] = x;
+       }
+   }
+
+   infile>>y;   proj->pln_vector.x=y;
+   infile>>y;   proj->pln_vector.y=y;
+   infile>>y;   proj->pln_vector.z=y;
+
+   return proj;
 }

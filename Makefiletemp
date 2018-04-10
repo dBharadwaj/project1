@@ -1,0 +1,64 @@
+TOPDIR          =$(PWD)
+SUBDIRS         =$(TOPDIR)/src/
+OBJDIR          =$(TOPDIR)/objects
+INCLUDES        =-I$(TOPDIR)/include/
+
+LDFLAGS         =
+
+
+LIBDIR          =$(TOPDIR)/lib/
+TESTDIRS        =$(TOPDIR)/tests
+CPP             =g++
+CPPFLAGS        =-Wall -Wno-unused -g $(INCLUDES) 
+
+
+OBJ_EXT         = .o
+EXE_EXT         =
+OBJ_OPT         = -c
+
+.EXPORT_ALL_VARIABLES:
+all: subdirs 
+
+lib: $(LIBDIR)/libMyMath.so
+
+subdirs:        $(SUBDIRS)
+$(SUBDIRS):
+	$(MAKE) -C $@
+.PHONY:         subdirs $(SUBDIRS)
+	
+
+$(LIBDIR)/libMyMath.so:  subdirs
+	$(CPP) -shared $(OBJDIR)/*.o $(LDFLAGS) -o  $@ 
+
+tests: subdirs testdir
+
+testdir:        $(TESTDIRS)
+$(TESTDIRS):
+	$(MAKE) -C $@
+.PHONY:         testdir $(TESTDIRS)
+
+
+
+
+clean:
+	rm -f *~ core;rm -f lib/*
+	@for T in $(SUBDIRS); do make -C $$T $@; done
+	@for T in $(TESTDIRS); do make -C $$T $@; done
+	rm -f $(TOPDIR)/objects/*.o
+	rm -f $(TOPDIR)/include/*~
+	rm -f $(LIBDIR)/libMyMath.so
+
+
+---------------------------------
+
+hello: $(OBJDIR)/%.o
+	$(CPP) %.o -o hello
+
+	$(OBJDIR)/change.o: $(SUBDIRS)/%.cpp
+	$(CPP) $(CPPFLAGS)  %.cpp 
+
+
+
+
+$(OBJDIR)/object.o : $(SRC)/object.cpp
+	$(CPP) $(CPPFLAGS) -c $< -o $@

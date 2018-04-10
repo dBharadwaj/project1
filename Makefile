@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 TOPDIR          =$(PWD)
 SUBDIRS         =$(TOPDIR)/src/
 OBJDIR          =$(TOPDIR)/objects
@@ -25,3 +26,15 @@ change.o: $(SUBDIRS)/change.cpp $(SUBDIRS)/object.cpp $(SUBDIRS)/3dinp.txt
 clear: 
 	rm -rf *o hello
 	rm -f $(TOPDIR)/objects/*.o
+=======
+CXX = g++
+
+cube:change.cpp object.cpp
+	$(CXX) change.cpp object.cpp -o cube -lglut -lGL
+
+test:change.cpp my_trail.cpp
+	g++ -o my_trail my_trail.cpp
+
+clean:
+	rm -f cube
+>>>>>>> 6a9da9600b10eaea15cb706bdcd5f567119c2507
